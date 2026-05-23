@@ -8,23 +8,23 @@ st.set_page_config(page_title="E-Commerce Performance Dashboard", layout="wide")
 st.title("📊 E-Commerce Business Performance Dashboard")
 st.markdown("---")
 
-# --- LOAD DATA ---
+
 try:
     df = pd.read_csv("main_data.csv")
 except FileNotFoundError:
     try:
         df = pd.read_csv("dashboard/main_data.csv")
     except Exception:
-        st.error("❌ Berkas 'main_data.csv' tidak ditemukan! Pastikan file berada di direktori yang tepat.")
+        st.error(" Berkas 'main_data.csv' tidak ditemukan! Pastikan file berada di direktori yang tepat.")
         st.stop()
 
-# Memastikan tipe data datetime
+
 df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
 
 min_date = df['order_purchase_timestamp'].min().date()
 max_date = df['order_purchase_timestamp'].max().date()
 
-# --- SIDEBAR FILTER ---
+
 with st.sidebar:
     st.markdown("## 🛒 **E-Commerce Menu**")
     st.header("Filter Rentang Waktu")
@@ -43,11 +43,11 @@ with st.sidebar:
     else:
         start_date = end_date = min_date
 
-# Filter Global
+
 filtered_df = df[(df['order_purchase_timestamp'].dt.date >= start_date) & 
                  (df['order_purchase_timestamp'].dt.date <= end_date)]
 
-# --- MAIN METRICS ---
+
 col1, col2, col3 = st.columns(3)
 with col1:
     total_orders = filtered_df['order_id'].nunique()
@@ -61,10 +61,10 @@ with col3:
 
 st.markdown("---")
 
-# --- TABS ANALYSIS ---
+
 tab1, tab2, tab3 = st.tabs(["📈 Performa Produk", "👥 Analisis Eksplorasi Pertanyaan 2", "📊 Segmentasi Lanjutan (RFM)"])
 
-# === TAB 1: PERFORMA PRODUK ===
+
 with tab1:
     st.subheader("Kategori Produk Pencetak Revenue Terbesar & Terkecil")
     
@@ -98,7 +98,6 @@ with tab1:
     else:
         st.warning("⚠️ Data transaksi tahun 2017 tidak ditemukan pada rentang filter saat ini.")
 
-# === TAB 2: VISUALISASI PERTANYAAN 2 MURNI DATA ASLI LU ===
 with tab2:
     st.subheader("Distribusi Frekuensi Belanja & Peta Spasial Geografis Demografi")
     
@@ -114,7 +113,7 @@ with tab2:
         
         fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(22, 7))
         
-        # Plot Kiri: Bar chart distribusi volume belanja (Log Scale)
+    
         sns.barplot(x='Jumlah_Transaksi', y='Jumlah_Pelanggan', data=frequency_counts, color='#003f5c', ax=ax[0])
         ax[0].set_yscale('log')
         ax[0].set_title("Distribusi Volume Frekuensi Belanja Pelanggan (Q1 2018)", fontsize=13, fontweight="bold")
@@ -122,9 +121,9 @@ with tab2:
         ax[0].set_ylabel("Jumlah Konsumen Unik (Skala Log)", fontsize=11)
         ax[0].grid(axis='y', linestyle='--', alpha=0.5)
         
-        # Plot Kanan: PETA ASLI MURNI DARI DATA KOORDINAT YANG BARU LU MERGE DI COLAB!
+        
         if 'geolocation_lng' in df_q1_2018.columns and 'geolocation_lat' in df_q1_2018.columns:
-            # Ambil sampel acak 3500 baris dengan random state=42 SAKLEK NYONTEK CELL LU!
+            
             geo_sample = df_q1_2018.dropna(subset=['geolocation_lng', 'geolocation_lat'])
             if len(geo_sample) > 3500:
                 geo_sample = geo_sample.sample(n=3500, random_state=42)
@@ -146,7 +145,7 @@ with tab2:
     else:
         st.warning("⚠️ Data transaksi Q1 2018 tidak ditemukan pada rentang filter saat ini.")
 
-# === TAB 3: VISUALISASI KLASTER MANUAL SEGMENTASI RFM ===
+
 with tab3:
     st.subheader("Karakteristik Loyalitas Pelanggan (Analisis Lanjutan)")
     
